@@ -29,7 +29,7 @@
     button:hover { background:var(--ink); }
 
     /* 1b. Pixel look for the login. Swap fonts, colours and the pattern here when your art is ready. */
-    #login { font-family:"Press Start 2P","Courier New",monospace; image-rendering:pixelated; }
+    #login { font-family:"Press Start 2P","Courier New",monospace; }
     /* Clean background with the same vignette as startup.png. The colours were measured from the PNG.
        Lighter centre, darker edges. To make the vignette stronger, darken the later stops. */
     #login.on {
@@ -54,18 +54,22 @@
        steps() makes the fades choppy, like old hardware. */
     #boot { position:fixed; inset:0; z-index:100; background:#000; display:grid; place-items:center;
       animation:boot-out 1.6s steps(8) 9s forwards; }
-    #boot img { display:block; width:100%; height:100%; object-fit:cover; opacity:0;
+    /* The image fits inside the screen and never grows past --boot-max (its real width is 1920px).
+       For a bigger picture on a big monitor, raise --boot-max, e.g. 2400px. Its edges fade into the black. */
+    #boot img { --boot-max:1920px; display:block; aspect-ratio:1920 / 900; height:auto;
+      width:min(100vw, calc(100vh * 1920 / 900), var(--boot-max));
+      -webkit-mask-image:linear-gradient(to right, transparent, #000 10%, #000 90%, transparent),
+                         linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+      -webkit-mask-composite:source-in;
+      mask-image:linear-gradient(to right, transparent, #000 10%, #000 90%, transparent),
+                 linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+      mask-composite:intersect;
+      opacity:0;
       animation:boot-in 1.6s steps(8) 5s forwards; }
     #boot::after { content:""; position:absolute; inset:0; pointer-events:none;
       background:repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.2) 2px 3px); }
     @keyframes boot-in  { to { opacity:1; } }
     @keyframes boot-out { to { opacity:0; visibility:hidden; } }
-    /* "cover" fills any computer screen. On tall or narrow screens (phones) it would crop the logo,
-       so show the whole image there instead. */
-    @media (max-aspect-ratio: 1/1) {
-      #boot { background:#0a0a0a; }
-      #boot img { object-fit:contain; }
-    }
     @media (prefers-reduced-motion: reduce) {
       #boot { animation-duration:.01s; animation-delay:0s; }
       #boot img { animation:none; }
