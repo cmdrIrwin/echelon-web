@@ -30,10 +30,11 @@
 
     /* 1b. Pixel look for the login. Swap fonts, colours and the pattern here when your art is ready. */
     #login { font-family:"Press Start 2P","Courier New",monospace; image-rendering:pixelated; }
+    /* Clean background with the same vignette as startup.png. The colours were measured from the PNG.
+       Lighter centre, darker edges. To make the vignette stronger, darken the later stops. */
     #login.on {
-      background:
-        linear-gradient(45deg,#1b1b1b 25%,transparent 25%,transparent 75%,#1b1b1b 75%) 0 0 / 8px 8px,
-        linear-gradient(45deg,#1b1b1b 25%,#101010 25%,#101010 75%,#1b1b1b 75%) 4px 4px / 8px 8px;
+      background: radial-gradient(ellipse 50% 71% at 50% 50%,
+        #282928 0%, #212221 50%, #181918 70%, #0e0f0e 90%, #070807 110%, #040404 130%);
     }
     #login .box { width:min(380px,92vw); padding:24px; background:#0b0b0b;
       border:4px solid var(--green); box-shadow:8px 8px 0 #000; }
@@ -53,12 +54,18 @@
        steps() makes the fades choppy, like old hardware. */
     #boot { position:fixed; inset:0; z-index:100; background:#000; display:grid; place-items:center;
       animation:boot-out 1.6s steps(8) 9s forwards; }
-    #boot img { display:block; max-width:100%; max-height:100%; opacity:0;
+    #boot img { display:block; width:100%; height:100%; object-fit:cover; opacity:0;
       animation:boot-in 1.6s steps(8) 5s forwards; }
     #boot::after { content:""; position:absolute; inset:0; pointer-events:none;
       background:repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.2) 2px 3px); }
     @keyframes boot-in  { to { opacity:1; } }
     @keyframes boot-out { to { opacity:0; visibility:hidden; } }
+    /* "cover" fills any computer screen. On tall or narrow screens (phones) it would crop the logo,
+       so show the whole image there instead. */
+    @media (max-aspect-ratio: 1/1) {
+      #boot { background:#0a0a0a; }
+      #boot img { object-fit:contain; }
+    }
     @media (prefers-reduced-motion: reduce) {
       #boot { animation-duration:.01s; animation-delay:0s; }
       #boot img { animation:none; }
